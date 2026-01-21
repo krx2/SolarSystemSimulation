@@ -115,22 +115,53 @@ public class SimulationRenderer {
     }
     
     /**
-     * Rysuje legendę z nazwami planet
+     * Rysuje legendę z nazwami planet i ich danymi
      */
     private void drawLegend(List<CelestialBody> bodies) {
+        gc.setFill(Color.rgb(0, 0, 0, 0.7)); // Semi-transparent background
+        gc.fillRect(5, 5, 380, bodies.size() * 65 + 10);
+        
         gc.setFill(Color.WHITE);
-        gc.setFont(new Font("Arial", 12));
+        gc.setFont(new Font("Arial Bold", 12));
         
         int y = 20;
         for (CelestialBody body : bodies) {
-            gc.fillText(body.getName(), 10, y);
+            // Nazwa planety
+            gc.setFont(new Font("Arial Bold", 12));
+            gc.fillText(body.getName(), 15, y);
             
             // Małe kółko z kolorem
             gc.setFill(body.getColor());
-            gc.fillOval(body.getName().length() * 7 + 15, y - 8, 10, 10);
+            gc.fillOval(body.getName().length() * 8 + 20, y - 8, 10, 10);
             gc.setFill(Color.WHITE);
             
-            y += 20;
+            // Dane planety
+            gc.setFont(new Font("Arial", 10));
+            Vector2D pos = body.getPosition();
+            Vector2D vel = body.getVelocity();
+            
+            // Oblicz odległość od Słońca
+            double distanceFromSun = pos.magnitude();
+            
+            // Położenie
+            y += 15;
+            gc.fillText(String.format("  Pozycja: (%.3f, %.3f) AU", pos.getX(), pos.getY()), 15, y);
+            
+            // Prędkość
+            y += 12;
+            double speed = vel.magnitude();
+            gc.fillText(String.format("  Prędkość: %.4f AU/dzień (%.3f, %.3f)", 
+                speed, vel.getX(), vel.getY()), 15, y);
+            
+            // Odległość od Słońca
+            y += 12;
+            if (body.isSun()) {
+                gc.fillText("  Odległość od Słońca: 0.000 AU (centrum)", 15, y);
+            } else {
+                gc.fillText(String.format("  Odległość od Słońca: %.3f AU", distanceFromSun), 15, y);
+            }
+            
+            y += 20; // Odstęp między planetami
         }
     }
 }

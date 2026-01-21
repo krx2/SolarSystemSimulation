@@ -132,7 +132,7 @@ public class PlanetDataParser {
     }
     
     private static CelestialBody createSun() {
-        return new CelestialBody(
+        CelestialBody sun = new CelestialBody(
             "Słońce",
             SUN_MASS_KG / EARTH_MASS_KG, // Masa względem Ziemi
             696000, // promień w km
@@ -140,6 +140,8 @@ public class PlanetDataParser {
             Vector2D.zero(),
             Vector2D.zero()
         );
+        sun.setIsSun(true);
+        return sun;
     }
     
     private static CelestialBody createPlanet(String name, double diameterKm) {
@@ -149,9 +151,16 @@ public class PlanetDataParser {
         // Oblicz masę na podstawie średnicy (przybliżenie)
         double massRelativeToEarth = Math.pow(diameterKm / EARTH_DIAMETER_KM, 3);
         
-        // Oblicz prędkość orbitalną (uproszczone prawo Keplera)
-        // v = sqrt(GM/r) w AU/day
-        double orbitalVelocity = Math.sqrt(1.0 / orbitalDistance) * 0.01720209895; // prędkość w AU/day
+        // Oblicz prędkość orbitalną
+        // v = sqrt(G * M_sun / r)
+        // G w jednostkach AU³/(M☉·day²) = 2.95912208286e-4
+        // M_sun = 1 (w jednostkach masy Słońca)
+        // Dla jednostek AU/day:
+        final double G_AU = 2.95912208286e-4;
+        final double M_SUN = SUN_MASS_KG / EARTH_MASS_KG; // Masa Słońca względem Ziemi
+        
+        // v = sqrt(G * M / r) - prędkość orbitalna w AU/day
+        double orbitalVelocity = Math.sqrt(G_AU * M_SUN / orbitalDistance);
         
         CelestialBody planet = new CelestialBody(
             name,
@@ -159,7 +168,7 @@ public class PlanetDataParser {
             diameterKm / 2.0, // promień
             color,
             new Vector2D(orbitalDistance, 0), // początkowa pozycja na osi X
-            new Vector2D(0, orbitalVelocity) // początkowa prędkość w górę (Y)
+            new Vector2D(0, orbitalVelocity) // początkowa prędkość prostopadła (Y)
         );
         
         return planet;

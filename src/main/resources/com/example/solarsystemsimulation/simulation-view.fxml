@@ -11,11 +11,11 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.solarsystemsimulation.ui.SimulationController"
-            prefWidth="1200" prefHeight="800">
+            prefWidth="1400" prefHeight="850">
     
     <!-- Canvas do rysowania symulacji -->
     <center>
-        <Canvas fx:id="simulationCanvas" width="1200" height="700"/>
+        <Canvas fx:id="simulationCanvas" width="1400" height="750"/>
     </center>
     
     <!-- Panel sterowania na dole -->
