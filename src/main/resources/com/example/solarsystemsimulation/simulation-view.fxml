@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.solarsystemsimulation.ui.SimulationController"
+            prefWidth="1200" prefHeight="800">
+    
+    <!-- Canvas do rysowania symulacji -->
+    <center>
+        <Canvas fx:id="simulationCanvas" width="1200" height="700"/>
+    </center>
+    
+    <!-- Panel sterowania na dole -->
+    <bottom>
+        <VBox spacing="10" style="-fx-background-color: #2b2b2b; -fx-padding: 10;">
+            <!-- Przyciski kontroli -->
+            <HBox spacing="10" alignment="CENTER">
+                <Button fx:id="startButton" text="Start" 
+                        onAction="#handleStart" 
+                        prefWidth="100" 
+                        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"/>
+                
+                <Button fx:id="stopButton" text="Stop" 
+                        onAction="#handleStop" 
+                        prefWidth="100"
+                        style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 14px;"/>
+                
+                <Button fx:id="resetButton" text="Reset" 
+                        onAction="#handleReset" 
+                        prefWidth="100"
+                        style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-size: 14px;"/>
+                
+                <Button fx:id="saveButton" text="Zapisz" 
+                        onAction="#handleSave" 
+                        prefWidth="100"
+                        style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;"/>
+                
+                <Button fx:id="loadButton" text="Wczytaj" 
+                        onAction="#handleLoad" 
+                        prefWidth="100"
+                        style="-fx-background-color: #9C27B0; -fx-text-fill: white; -fx-font-size: 14px;"/>
+            </HBox>
+            
+            <!-- Slider prędkości -->
+            <HBox spacing="10" alignment="CENTER">
+                <Label text="Prędkość symulacji:" 
+                       style="-fx-text-fill: white; -fx-font-size: 14px;"/>
+                
+                <Slider fx:id="speedSlider" 
+                        prefWidth="400" 
+                        style="-fx-text-fill: white;"/>
+                
+                <Label fx:id="speedLabel" text="1.0x" 
+                       prefWidth="50"
+                       style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>

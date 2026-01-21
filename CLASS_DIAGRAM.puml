@@ -1,0 +1,207 @@
+@startuml SolarSystemSimulation
+
+' Wzorce i struktura projektu
+
+package "physics" {
+    class Vector2D {
+        -x: double
+        -y: double
+        +add(Vector2D): Vector2D
+        +subtract(Vector2D): Vector2D
+        +multiply(double): Vector2D
+        +magnitude(): double
+        +normalize(): Vector2D
+    }
+    
+    interface PhysicsStrategy {
+        +calculateAcceleration(): Vector2D
+        +updateBody(CelestialBody, double): void
+    }
+    
+    class NewtonianPhysics {
+        -G: double
+        +calculateAcceleration(): Vector2D
+        +updateBody(CelestialBody, double): void
+    }
+    
+    PhysicsStrategy <|.. NewtonianPhysics
+}
+
+package "model" {
+    class CelestialBody {
+        -name: String
+        -mass: double
+        -radius: double
+        -color: Color
+        -position: Vector2D
+        -velocity: Vector2D
+        -acceleration: Vector2D
+        -isSun: boolean
+        +saveToMemento(): CelestialBodyMemento
+        +restoreFromMemento(): void
+    }
+    
+    class CelestialBodyMemento {
+        -position: Vector2D
+        -velocity: Vector2D
+        -acceleration: Vector2D
+    }
+    
+    CelestialBody +-- CelestialBodyMemento
+    CelestialBody --> Vector2D
+}
+
+package "simulation" {
+    interface SimulationState {
+        +start(): void
+        +stop(): void
+        +reset(): void
+        +update(): void
+    }
+    
+    class RunningState {
+        -simulation: Simulation
+        +start(): void
+        +stop(): void
+        +reset(): void
+        +update(): void
+    }
+    
+    class StoppedState {
+        -simulation: Simulation
+        +start(): void
+        +stop(): void
+        +reset(): void
+        +update(): void
+    }
+    
+    interface SimulationObserver {
+        +onSimulationUpdate(): void
+        +onSimulationStarted(): void
+        +onSimulationStopped(): void
+        +onSimulationReset(): void
+    }
+    
+    class Simulation {
+        -bodies: List<CelestialBody>
+        -observers: List<SimulationObserver>
+        -physicsStrategy: PhysicsStrategy
+        -state: SimulationState
+        +addBody(CelestialBody): void
+        +start(): void
+        +stop(): void
+        +reset(): void
+        +update(): void
+        +saveToMemento(): SimulationMemento
+        +restoreFromMemento(): void
+    }
+    
+    class SimulationMemento {
+        -bodyMementos: List<CelestialBodyMemento>
+        -speedMultiplier: double
+    }
+    
+    SimulationState <|.. RunningState
+    SimulationState <|.. StoppedState
+    Simulation --> SimulationState
+    Simulation --> PhysicsStrategy
+    Simulation --> CelestialBody
+    Simulation --> SimulationObserver
+    Simulation +-- SimulationMemento
+    RunningState --> Simulation
+    StoppedState --> Simulation
+}
+
+package "ui" {
+    class SimulationController {
+        -simulation: Simulation
+        -renderer: SimulationRenderer
+        -animationTimer: AnimationTimer
+        +handleStart(): void
+        +handleStop(): void
+        +handleReset(): void
+        +handleSave(): void
+        +handleLoad(): void
+        +onSimulationUpdate(): void
+    }
+    
+    class SimulationRenderer {
+        -gc: GraphicsContext
+        -width: double
+        -height: double
+        -scale: double
+        +render(List<CelestialBody>): void
+        +drawBody(CelestialBody): void
+        +drawOrbits(List<CelestialBody>): void
+    }
+    
+    SimulationController ..|> SimulationObserver
+    SimulationController --> Simulation
+    SimulationController --> SimulationRenderer
+    SimulationRenderer --> CelestialBody
+}
+
+package "data" {
+    class PlanetDataParser {
+        {static} +parsePlanetsFromXML(String): List<CelestialBody>
+        {static} +getDefaultPlanets(): List<CelestialBody>
+        {static} -createPlanet(String, double): CelestialBody
+        {static} -createSun(): CelestialBody
+    }
+    
+    PlanetDataParser ..> CelestialBody
+}
+
+package "persistence" {
+    class SimulationPersistence {
+        {static} +saveSimulation(Simulation, String): void
+        {static} +loadSimulation(Simulation, String): void
+    }
+    
+    SimulationPersistence ..> Simulation
+}
+
+' Główna aplikacja
+class SolarSystemApplication {
+    +start(Stage): void
+    +main(String[]): void
+}
+
+SolarSystemApplication --> SimulationController
+
+' Oznaczenia wzorców
+note left of PhysicsStrategy
+  **Wzorzec: Strategy**
+  Umożliwia zmianę
+  algorytmu fizyki
+end note
+
+note right of SimulationState
+  **Wzorzec: State**
+  Zarządzanie stanem
+  symulacji
+end note
+
+note bottom of SimulationObserver
+  **Wzorzec: Observer**
+  Powiadamianie o zmianach
+end note
+
+note left of CelestialBodyMemento
+  **Wzorzec: Memento**
+  Zapisywanie i przywracanie
+  stanu
+end note
+
+note right of PlanetDataParser
+  **Wzorzec: Adapter**
+  Adaptacja danych XML
+  do modelu
+end note
+
+note bottom of SimulationRenderer
+  **Wzorzec: Decorator**
+  Rozszerza GraphicsContext
+end note
+
+@enduml
